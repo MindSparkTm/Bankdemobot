@@ -3,9 +3,9 @@ var request = require('request');
 var http = require('http');
 var express = require("express");
 var bodyParser = require("body-parser");
-var rg = require("./Controllers/registrationcontroller")
-var bc = require("./Controllers/balancecontroller.js")
-
+var rg = require("./RequestHandlers/registrationhandler");
+var bc = require("./RequestHandlers/balancehandler.js");
+var trx = require("./RequestHandlers/ministatementhandler.js");
 var app = express();
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
@@ -33,7 +33,7 @@ telegram.on("text",function (message,req,res) {
 
 
     if(messagetext=== 'menu'){
-        console.log(messagetext);
+        console.log(message);
         var menu =["Registration","Balance","Summary"];
 
 
@@ -106,7 +106,36 @@ telegram.on('callback_query', function (msg) {
             break;
 
         case 'summary':
+           trx.getsummary(senderid).then(function(v){
+               var obj = JSON.parse(v);
 
+               if(obj.balance2!='-1'){
+                   console.log ("Entered");
+
+                var balance = obj.balance2;
+                var transactionsummary = obj.transactionsummary;
+                var date = obj.date2;
+
+                console.log(transactionsummary);
+
+                   for(var i=0;i<balance.length;i++){
+                    telegram.sendMessage(senderid, "Balance" +"||"+balance[i]+"||"+"transactionsummary"+
+                    "||"+transactionsummary[i]+"date"+"||"+date[i]);
+
+                }
+
+
+
+                   telegram.answerCallbackQuery(msg.id);
+
+               }
+
+               else
+               {
+                   telegram.sendMessage(senderid, "Your telegram ID is not registered,Kindly contact your bank");
+                   telegram.answerCallbackQuery(msg.id);
+               }
+           });
             break;
 
 

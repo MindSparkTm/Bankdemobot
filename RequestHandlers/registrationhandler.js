@@ -3,17 +3,16 @@ var request = require('request');
 var http = require('http');
 
 
+
 module.exports = {
+    isUserRegistered: function (senderid,callback) {
 
 
-    getbalance: function (senderid, callback) {
-
-
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
 
 
             request({
-                url: 'https://5c03598e.ngrok.io/balance?senderid=' + senderid,
+                url:'https://e39832df.ngrok.io/validateuser?senderid='+senderid,
                 method: "GET"
 
             }, function (error, resp, body) {
@@ -28,5 +27,7 @@ module.exports = {
 
 
     }
-}
 
+
+
+}
